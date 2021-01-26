@@ -21,7 +21,7 @@ public class MousePos : MonoBehaviour
             for (float x = -5; x <= 5; x += 0.1f)
             {
                 var pos = new Vector3(x, y, 0);
-                ShikakuHantei(pos, 30);
+                ShikakuHantei(pos, 20);
             }
     }
 
@@ -58,8 +58,19 @@ public class MousePos : MonoBehaviour
         */
 
         //少々複雑の為関数にした
-        KaitenShikaku(pos, 30);
+        KaitenShikaku(pos, 20);
     }
+
+    //四角形の場所
+    [SerializeField]
+    float x = 0;
+    [SerializeField]
+    float y = 0;
+
+    [SerializeField]
+    float sclx = 1;
+    [SerializeField]
+    float scly = 1;
 
     /// <summary>
     /// 判定領域の表示
@@ -70,10 +81,10 @@ public class MousePos : MonoBehaviour
     {
         float rad = -theta * Mathf.Deg2Rad;//Unityの仕様上-1を掛けている(別の環境によって変える)
 
-        var up = Mathf.Cos(rad) * pos.x + (-Mathf.Sin(rad) * pos.y);
-        var down = Mathf.Sin(rad) * pos.x + Mathf.Cos(rad) * pos.y;
+        var up = Mathf.Cos(rad) * (pos.x  - x) + (-Mathf.Sin(rad) * (pos.y - y));
+        var down = Mathf.Sin(rad) * (pos.x - x) + Mathf.Cos(rad) * (pos.y - y);
         
-        if (3 >= Mathf.Abs(up + down) + Mathf.Abs(up - down))
+        if (1 >= Mathf.Abs(up / sclx + down / scly) + Mathf.Abs(up / sclx - down / scly))
             Instantiate(hit, pos, Quaternion.identity);
         else
             Instantiate(not, pos, Quaternion.identity);
@@ -92,15 +103,15 @@ public class MousePos : MonoBehaviour
         //回転行列を利用
         //参考:https://www.sist.ac.jp/~kanakubo/research/hosoku/kaiten_gyoretu.html
         //up:xのこと
-        var up = Mathf.Cos(rad) * pos.x + (-Mathf.Sin(rad) * pos.y);
+        var up = Mathf.Cos(rad) * (pos.x - x) + (-Mathf.Sin(rad) * (pos.y - y));
         //down:yのこと
-        var down = Mathf.Sin(rad) * pos.x + Mathf.Cos(rad) * pos.y;
+        var down = Mathf.Sin(rad) * (pos.x - x) + Mathf.Cos(rad) * (pos.y - y);
 
         Debug.Log($"{Mathf.Abs(up + down) + Mathf.Abs(up - down)}");
 
         //左辺:1辺の大きさ
         //右辺:
-        if (3 >= Mathf.Abs(up + down) + Mathf.Abs(up - down))
+        if (1 >= Mathf.Abs(up / sclx + down / scly) + Mathf.Abs(up / sclx - down / scly))
             Debug.Log("当たった");   
     }
 }
